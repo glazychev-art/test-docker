@@ -24,6 +24,7 @@ jobs:
         id: findPr
         with:
           sha: ${{ github.sha }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout glazychev-art/${{ matrix.repository }}
         uses: actions/checkout@v2
         with:
