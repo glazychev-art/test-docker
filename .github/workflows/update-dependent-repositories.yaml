@@ -43,8 +43,8 @@ jobs:
       - name: Find and Replace version
         uses: jacobtomlinson/gha-find-replace@v3
         with:
-          find: "VPP_VERSION=*\n"
-          replace: "VPP_VERSION=${{ github.event.client_payload.tag }}\n"
+          find: "VPP_VERSION=.*"
+          replace: "VPP_VERSION=${{ github.event.client_payload.tag }}"
       - name: Push update to the ${{ matrix.repository }}
         working-directory: glazychev-art/${{ matrix.repository }}
         run: |
