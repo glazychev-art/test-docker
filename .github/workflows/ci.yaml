@@ -37,4 +37,4 @@ jobs:
         uses: peter-evans/repository-dispatch@v2
         with:
           event-type: tag-event
-          client-payload: '{"sha": "${{ github.sha }}", "tag": "${TAG}"}'
+          client-payload: '{"sha": "${{ github.sha }}", "tag": ${TAG}}'
