@@ -55,6 +55,6 @@ jobs:
             echo ${{ matrix.repository }} is up to date
             exit 0;
           fi
-          git commit -s
+          git commit -s -m "Message"
           git checkout -b update/${{ github.repository }}
           git push -f origin update/${{ github.repository }}
