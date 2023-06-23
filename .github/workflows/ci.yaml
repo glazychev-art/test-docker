@@ -46,5 +46,5 @@ jobs:
     if: ${{ github.event_name == 'push' }}
     uses: glazychev-art/test-docker/.github/workflows/update-dependent-repositories.yaml@main
     with:
-      docker_tag: ${{ build.get-tag.outputs.tag }}
+      docker_tag: ${{ needs.build.outputs.tag }}
 
