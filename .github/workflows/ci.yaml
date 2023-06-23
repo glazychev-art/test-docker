@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Tag
         run: |
-          TAG=v8
+          TAG=v9
           echo "TAG=${TAG}" >> $GITHUB_ENV
       - name: Docker Build
         run: |
@@ -47,4 +47,5 @@ jobs:
     uses: glazychev-art/test-docker/.github/workflows/update-dependent-repositories.yaml@main
     with:
       docker_tag: ${{ needs.build.outputs.tag }}
+      token: ${{ secrets.BOT_GITHUB_TOKEN }}
 
