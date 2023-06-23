@@ -1,0 +1,59 @@
+---
+name: Update dependent repositories
+on:
+  repository_dispatch:
+    types: [tag-event]
+jobs:
+  update-dependent-repositories:
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        repository:
+          - test-dep-repo
+    name: Update ${{ matrix.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v2
+        with:
+          path: ${{ github.repository }}
+          repository: ${{ github.repository }}
+      - name: Find merged PR
+        uses: jwalton/gh-find-current-pr@v1.0.2
+        id: findPr
+        with:
+          sha: ${{ github.sha }}
+      - name: Checkout glazychev-art/${{ matrix.repository }}
+        uses: actions/checkout@v2
+        with:
+          path: glazychev-art/${{ matrix.repository }}
+          repository: glazychev-art/${{ matrix.repository }}
+      - uses: actions/setup-go@v1
+        with:
+          go-version: 1.20.5
+      - name: Update ${{ matrix.repository }} locally
+        working-directory: glazychev-art/${{ matrix.repository }}
+        run: |
+          go get -u github.com/${{ github.repository }}@${{ github.event.client_payload.sha }}
+          go mod tidy
+          git diff
+      - name: Find and Replace version
+        uses: jacobtomlinson/gha-find-replace@v2
+        with:
+          find: "VPP_VERSION=*\n"
+          replace: "VPP_VERSION=${{ github.event.client_payload.tag }}\n"
+      - name: Push update to the ${{ matrix.repository }}
+        working-directory: glazychev-art/${{ matrix.repository }}
+        run: |
+          echo Starting to update repositotry ${{ matrix.repository }}
+          git config --global user.email "nsmbot@networkservicmesh.io"
+          git config --global user.name "NSMBot"
+          git add go.mod go.sum
+          if ! [ -n "$(git diff --cached --exit-code)" ]; then
+            echo ${{ matrix.repository }} is up to date
+            exit 0;
+          fi
+          git commit -s -F /tmp/commit-message
+          git checkout -b update/${{ github.repository }}
+          git push -f origin update/${{ github.repository }}
