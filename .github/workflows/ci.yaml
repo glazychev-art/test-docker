@@ -9,6 +9,8 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
+    outputs:
+      docker_tag: ${{ steps.docker_push.outputs.docker_tag }}
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -32,7 +34,7 @@ jobs:
         if: steps.docker_login.outcome == 'success'
         run: |
           docker push ghcr.io/${{github.repository}}/test:${TAG}
-          echo tag=${TAG} >> $GITHUB_OUTPUT
+          echo docker_tag=${TAG} >> $GITHUB_OUTPUT
   #          echo "sha=$TAG" >> $GITHUB_OUTPUT
   #      - name: Trigger update of dependent repositories
   #        if: steps.docker_push.outcome == 'success'
@@ -46,6 +48,6 @@ jobs:
     if: ${{ github.event_name == 'push' }}
     uses: glazychev-art/test-docker/.github/workflows/update-dependent-repositories.yaml@main
     with:
-      docker_tag: ${{ needs.build.outputs.tag }}
+      docker_tag: ${{ needs.build.outputs.docker_tag }}
     secrets:
       token: ${{ secrets.BOT_GITHUB_TOKEN }}
