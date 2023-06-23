@@ -30,6 +30,7 @@ jobs:
         with:
           path: glazychev-art/${{ matrix.repository }}
           repository: glazychev-art/${{ matrix.repository }}
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
       - uses: actions/setup-go@v1
         with:
           go-version: 1.20.5
@@ -40,7 +41,7 @@ jobs:
           go mod tidy
           git diff
       - name: Find and Replace version
-        uses: jacobtomlinson/gha-find-replace@v2
+        uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "VPP_VERSION=*\n"
           replace: "VPP_VERSION=${{ github.event.client_payload.tag }}\n"
