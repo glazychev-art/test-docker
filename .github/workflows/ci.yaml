@@ -32,7 +32,7 @@ jobs:
         if: steps.docker_login.outcome == 'success'
         run: |
           docker push ghcr.io/${{github.repository}}/test:${TAG}
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo tag=${TAG} >> $GITHUB_OUTPUT
   #          echo "sha=$TAG" >> $GITHUB_OUTPUT
   #      - name: Trigger update of dependent repositories
   #        if: steps.docker_push.outcome == 'success'
