@@ -6,6 +6,9 @@ on:
       docker_tag:
         type: string
         required: true
+    secrets:
+      token:
+        required: true
 jobs:
   update-dependent-repositories:
     continue-on-error: true
@@ -27,13 +30,13 @@ jobs:
         id: findPr
         with:
           sha: ${{ github.sha }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.token }}
       - name: Checkout glazychev-art/${{ matrix.repository }}
         uses: actions/checkout@v2
         with:
           path: glazychev-art/${{ matrix.repository }}
           repository: glazychev-art/${{ matrix.repository }}
-          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          token: ${{ secrets.token }}
       - uses: actions/setup-go@v1
         with:
           go-version: 1.20.5
