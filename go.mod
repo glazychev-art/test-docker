@@ -1,3 +1,3 @@
-module github.com/glazychev/test-docker
+module github.com/glazychev-art/test-docker
 
 go 1.20
