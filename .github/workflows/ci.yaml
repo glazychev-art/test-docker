@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Tag
         run: |
-          TAG=v7
+          TAG=v8
           echo "TAG=${TAG}" >> $GITHUB_ENV
       - name: Docker Build
         run: |
@@ -32,9 +32,19 @@ jobs:
         if: steps.docker_login.outcome == 'success'
         run: |
           docker push ghcr.io/${{github.repository}}/test:${TAG}
-      - name: Trigger update of dependent repositories
-        if: steps.docker_push.outcome == 'success'
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          event-type: tag-event
-          client-payload: '{"sha": "${{ github.sha }}", "tag": "${{ env.TAG }}"}'
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+#          echo "sha=$TAG" >> $GITHUB_OUTPUT
+#      - name: Trigger update of dependent repositories
+#        if: steps.docker_push.outcome == 'success'
+#        uses: peter-evans/repository-dispatch@v2
+#        with:
+#          event-type: tag-event
+#          client-payload: '{"sha": "${{ github.sha }}", "tag": "${{ env.TAG }}"}'
+  update_dependent_repositories:
+    name: update_dependent_repositories
+    needs: build
+    if: ${{ github.event_name == 'push' }}
+    uses: glazychev-art/test-docker/.github/workflows/update-dependent-repositories.yaml@main
+    with:
+      docker_tag: ${{ build.get-tag.outputs.tag }}
+

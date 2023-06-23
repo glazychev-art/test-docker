@@ -1,8 +1,11 @@
 ---
 name: Update dependent repositories
 on:
-  repository_dispatch:
-    types: [tag-event]
+  workflow_call:
+    inputs:
+      docker_tag:
+        type: string
+        required: true
 jobs:
   update-dependent-repositories:
     continue-on-error: true
@@ -37,14 +40,14 @@ jobs:
       - name: Update ${{ matrix.repository }} locally
         working-directory: glazychev-art/${{ matrix.repository }}
         run: |
-          go get -u github.com/${{ github.repository }}@${{ github.event.client_payload.sha }}
+          go get -u github.com/${{ github.repository }}@${{ github.sha }}
           go mod tidy
           git diff
       - name: Find and Replace version
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "VPP_VERSION=.*"
-          replace: "VPP_VERSION=${{ github.event.client_payload.tag }}"
+          replace: "VPP_VERSION=${{ inputs.docker_tag }}"
       - name: Push update to the ${{ matrix.repository }}
         working-directory: glazychev-art/${{ matrix.repository }}
         run: |
